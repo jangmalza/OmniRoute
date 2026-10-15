@@ -19,6 +19,7 @@ import { clamp01 } from "../../utils/number.ts";
 import { rankBySpeed } from "./speedRanking.ts";
 import type { SpeedCandidate } from "./speedRanking.ts";
 import { NadirStrategyImpl, type NadirRoutingConfig } from "./nadirStrategy.ts";
+import { AutoDecisionStrategyImpl, type AutoDecisionConfig } from "./decisionStrategy.ts";
 
 export interface SlaRoutingPolicy {
   targetP95Ms?: number;
@@ -41,6 +42,8 @@ export interface RoutingContext {
   messages?: unknown;
   /** The combo's `config.nadir` block; see nadirStrategy.ts. */
   nadir?: NadirRoutingConfig;
+  /** Optional vendor-neutral backend strategy configuration. */
+  decision?: AutoDecisionConfig;
 }
 
 export interface RoutingDecision {
@@ -400,6 +403,7 @@ strategyRegistry.set("sla-aware", slaStrategy);
 strategyRegistry.set("sla", slaStrategy); // alias
 strategyRegistry.set("lkgp", lkgpStrategy);
 strategyRegistry.set("nadir", new NadirStrategyImpl({ fallback: rulesStrategy }));
+strategyRegistry.set("decision", new AutoDecisionStrategyImpl({ fallback: rulesStrategy }));
 
 export function getStrategy(name: string): RouterStrategy {
   const strategy = strategyRegistry.get(name);
