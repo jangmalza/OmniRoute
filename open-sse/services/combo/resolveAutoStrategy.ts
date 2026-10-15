@@ -11,6 +11,7 @@ import {
   parseRequestBudgetFallback,
 } from "../autoCombo/requestControls.ts";
 import { selectWithStrategyAsync } from "../autoCombo/routerStrategy.ts";
+import { extractDecisionUserText } from "../autoCombo/decisionStrategy.ts";
 import { buildComplexityRoutingHint } from "../autoCombo/complexityRouter";
 import { getModePack } from "../autoCombo/modePacks.ts";
 import { recordComboIntent } from "../comboMetrics.ts";
@@ -79,6 +80,8 @@ export interface ResolveAutoStrategyDeps {
   resilienceSettings: ResilienceSettings;
   log: ComboLogger;
   buildAutoCandidates: BuildAutoCandidates;
+  apiKeyAllowedConnections?: string[] | null;
+  signal?: AbortSignal | null;
 }
 
 export type ResolveAutoStrategyResult =
@@ -257,6 +260,7 @@ export async function resolveAutoStrategyOrder(
     resetWindowConfig,
     slaPolicy,
     nadirConfig,
+    decisionConfig,
   } = parseAutoConfig(combo, eligibleTargets);
 
   // Per-request overrides (#6023 / #6024 / #6025 / #3470): X-OmniRoute-Budget,
@@ -384,6 +388,12 @@ export async function resolveAutoStrategyOrder(
             explorationRate,
             messages: body.messages,
             nadir: nadirConfig,
+            decision: routingStrategy === "decision" ? {
+              ...decisionConfig,
+              state: extractDecisionUserText(body),
+              allowedConnections: deps.apiKeyAllowedConnections,
+              signal: deps.signal,
+            } : undefined,
           },
           routingStrategy
         );
