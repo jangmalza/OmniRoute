@@ -368,7 +368,10 @@ export async function resolveAutoStrategyOrder(
     let selectedConnectionId: string | null = null;
     let selectionReason = "";
 
-    if (routingStrategy !== "rules") {
+    // A strict budget must remain enforced by the existing budget-aware engine.
+    // The decision adapter does not estimate token cost, so it must not
+    // silently override a configured hard cost ceiling.
+    if (routingStrategy !== "rules" && !(routingStrategy === "decision" && budgetCap !== undefined)) {
       try {
         const decision = await selectWithStrategyAsync(
           routableCandidates,
