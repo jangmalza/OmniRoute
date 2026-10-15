@@ -89,6 +89,7 @@ export const ROUTER_STRATEGY_OPTIONS = [
   { id: "sla-aware", label: "SLA-aware" },
   { id: "lkgp", label: "Last Known Good Provider" },
   { id: "nadir", label: "Nadir (route by prompt complexity)" },
+  { id: "decision", label: "Decision (JEV, opt-in)" },
 ] as const;
 
 export const FACTOR_LABELS: Record<keyof IntelligentRoutingWeights, string> = {
