@@ -47,6 +47,7 @@ export const AUTO_ROUTING_STRATEGY_VALUES = [
   "sla",
   "lkgp",
   "nadir",
+  "decision",
 ] as const;
 
 export type AutoRoutingStrategyValue = (typeof AUTO_ROUTING_STRATEGY_VALUES)[number];
